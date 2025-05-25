@@ -54,7 +54,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           artifact-ids: ${{ env.SPEC_ARTIFACT }}
-          path: spec
+          path: spec/openapi.yaml
 
       - name: Setup openapi-generator-cli
         run: npm install @openapitools/openapi-generator-cli -g
@@ -62,7 +62,7 @@ jobs:
       - name: Generate entrypoint
         run: |
           openapi-generator-cli generate \
-            -i spec/tsp-output/schema/openapi.yaml \
+            -i spec/openapi.yaml \
             -g spring \
             -o ${GEN_DEST} \
             --additional-properties=delegatePattern=true,skipOverwrite=true
