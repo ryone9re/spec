@@ -42,13 +42,14 @@ jobs:
       SPEC_ARTIFACT: ${{ needs.compile.outputs.artifact-id }}
       BACKEND_REPO: ryone9re/trdst
       BRANCH_NAME: gen/openapi-${{ github.run_id }}
-      GEN_DEST: src/main/java/dev/ryone/trdst/infrastructure/web/entrypoint
+      GEN_DEST: backend/src/main/java/dev/ryone/trdst/infrastructure/web/entrypoint
     steps:
       - name: Checkout backend repository
         uses: actions/checkout@v4
         with:
           repository: ${{ env.BACKEND_REPO }}
           token: ${{ secrets.BACKEND_PUSH_TOKEN }}
+          path: backend
 
       - name: Download openapi spec
         uses: actions/download-artifact@v4
@@ -63,14 +64,18 @@ jobs:
           openapi-generator-cli generate \
             -i artifact/openapi.yaml \
             -g spring \
-            -o ${GEN_DEST} \
-            --additional-properties=delegatePattern=true,skipOverwrite=true
-
-      - name: Remove artifact
-        run: rm -rf artifact
+            -o backend \
+            --global-property=apis,models,supportingFiles=true \
+            --additional-properties=skipOverwrite=true, \
+            basePackage=dev.ryone.trdst.infrastructure.web.entrypoint, \
+            apiPackage=dev.ryone.trdst.infrastructure.web.entrypoint.controller, \
+            modelPackage=dev.ryone.trdst.infrastructure.web.entrypoint.model, \
+            interfaceOnly=false,apiDocs=false,apiTests=false,modelDocs=false,modelTests=false, \
+            useSpringBoot3=true
 
       - name: Commit & Push
         run: |
+          cd backend
           git config user.name  "openapi-bot"
           git config user.email "openapi-bot@users.noreply.github.com"
           git checkout -b $BRANCH_NAME
