@@ -33,8 +33,7 @@ jobs:
         id: set
         uses: actions/upload-artifact@v4
         with:
-          name: openapi.yaml
-          path: tsp-output/schema
+          path: tsp-output/schema/openapi.yaml
 
   generate:
     runs-on: ubuntu-latest
@@ -57,7 +56,9 @@ jobs:
           artifact-ids: ${{ env.SPEC_ARTIFACT }}
           path: spec
 
-      - run: cat spec/openapi.yaml
+      - run: tree
+      - run: file spec/artifact
+      - run: file spec/openapi.yaml
 
       - name: Setup openapi-generator-cli
         run: npm install @openapitools/openapi-generator-cli -g
