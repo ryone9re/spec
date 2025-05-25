@@ -1,12 +1,19 @@
 name: ci
+
 on:
   push:
     branches:
       - main
+    paths:
+      - main.tsp
+      - schema/**.tsp
+      - tspconfig.yaml
 
 jobs:
   compile:
     runs-on: ubuntu-latest
+    outputs:
+      artifact-id: ${{ steps.set.outputs.artifact-id }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,7 +30,65 @@ jobs:
         run: npm run compile
 
       - name: Upload schema to Artifact
+        id: set
         uses: actions/upload-artifact@v4
         with:
           name: openapi
           path: tsp-output/schema/openapi.yaml
+
+  generate:
+    runs-on: ubuntu-latest
+    needs: compile
+    env:
+      SPEC_ARTIFACT: ${{ needs.compile.outputs.artifact-id }}
+      BACKEND_REPO: ryone9re/trdst
+      BRANCH_NAME: gen/openapi-${{ github.run_id }}
+      GEN_DEST: src/main/java/dev/ryone/trdst/infrastructure/web/entrypoint
+    steps:
+      - name: Checkout backend repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.BACKEND_REPO }}
+          token: ${{ secrets.BACKEND_PUSH_TOKEN }}
+
+      - name: Download openapi spec
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.SPEC_ARTIFACT }}
+          path: spec
+
+      - name: Setup openapi-generator-cli
+        run: npm install @openapitools/openapi-generator-cli -g
+
+      - name: Generate entrypoint
+        run: |
+          openapi-generator-cli generate \
+            -i spec/openapi.yaml \
+            -g spring \
+            -o ${GEN_DEST} \
+            --additional-properties=delegatePattern=true,skipOverwrite=true
+
+      - name: Commit & Push
+        run: |
+          cd backend
+          git config user.name  "openapi-bot"
+          git config user.email "openapi-bot@users.noreply.github.com"
+          git checkout -b $BRANCH_NAME
+          git add ${GEN_DEST}
+          git diff --cached --quiet && { echo "no diff, skip PR"; exit 0; }
+          git commit -m "chore: regen infra stubs from ${GITHUB_SHA::7}"
+          git push -u origin $BRANCH_NAME
+        env:
+          GITHUB_TOKEN: ${{ secrets.BACKEND_PUSH_TOKEN }}
+
+      - name: Create draft PR
+        run: |
+          gh pr create \
+            --repo $BACKEND_REPO \
+            --head $BRANCH_NAME \
+            --base main \
+            --title "chore: (draft) Generate entrypoint" \
+            --body  "Spec commit: $GITHUB_SERVER_URL/${{ github.repository }}/commit/${{ github.sha }}" \
+            --draft
+        env:
+          GITHUB_TOKEN: ${{ secrets.BACKEND_PUSH_TOKEN }}
