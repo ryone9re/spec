@@ -57,6 +57,8 @@ jobs:
           artifact-ids: ${{ env.SPEC_ARTIFACT }}
           path: spec
 
+      - run: cat spec/openapi.yaml
+
       - name: Setup openapi-generator-cli
         run: npm install @openapitools/openapi-generator-cli -g
 
