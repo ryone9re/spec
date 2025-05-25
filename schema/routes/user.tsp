@@ -9,7 +9,7 @@ model UserResponse {
 }
 
 @route("/users")
-@tag("RootService")
+@tag("UserService")
 interface UserService {
   @get getUser(): UserResponse;
 }

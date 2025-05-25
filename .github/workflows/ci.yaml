@@ -66,8 +66,7 @@ jobs:
             -g spring \
             -o backend \
             --global-property=apis,models,supportingFiles=true \
-            --additional-properties=\
-              skipOverwrite=true,\
+            --additional-properties=skipOverwrite=true,\
               basePackage=dev.ryone.trdst.infrastructure.web.entrypoint,\
               apiPackage=dev.ryone.trdst.infrastructure.web.entrypoint.controller,\
               modelPackage=dev.ryone.trdst.infrastructure.web.entrypoint.model,\
