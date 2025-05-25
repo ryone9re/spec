@@ -42,7 +42,7 @@ jobs:
       SPEC_ARTIFACT: ${{ needs.compile.outputs.artifact-id }}
       BACKEND_REPO: ryone9re/trdst
       BRANCH_NAME: gen/openapi-${{ github.run_id }}
-      GEN_DEST: backend/src/main/java/dev/ryone/trdst/infrastructure/web/entrypoint
+      GEN_DEST: src/main/java/dev/ryone/trdst/infrastructure/web/entrypoint
     steps:
       - name: Checkout backend repository
         uses: actions/checkout@v4
