@@ -5,12 +5,12 @@ using Http;
 @service(#{ title: "Root Service" })
 namespace Root;
 
-model Response {
+model RootResponse {
   message: string;
 }
 
 @route("/get")
-@tag("Root::Service")
-interface Service {
-  @get get(): Response;
+@tag("RootService")
+interface RootService {
+  @get getRoot(): RootResponse;
 }
