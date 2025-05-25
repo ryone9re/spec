@@ -65,7 +65,7 @@ jobs:
             -i artifact/openapi.yaml \
             -g spring \
             -o backend \
-            --global-property=apis,models,supportingFiles=true \
+            --global-property=apis,models,supportingFiles=true\
             --additional-properties=skipOverwrite=true,\
               basePackage=dev.ryone.trdst.infrastructure.web.entrypoint,\
               apiPackage=dev.ryone.trdst.infrastructure.web.entrypoint.controller,\
