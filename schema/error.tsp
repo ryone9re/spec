@@ -1,5 +1,7 @@
+namespace Error;
+
 @error
-model Error {
+model Response {
   code: int32;
   message?: string;
 }
