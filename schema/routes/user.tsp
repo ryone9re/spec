@@ -4,12 +4,15 @@ using Http;
 
 namespace API;
 
-model UserResponse {
-  message: string;
-}
-
 @route("/users")
-@tag("UserService")
-interface UserService {
-  @get getUser(): UserResponse;
+namespace User {
+  model UserResponse {
+    message: string;
+  }
+
+  @route("/")
+  @tag("UserService")
+  interface UserService {
+    @get getUser(): UserResponse;
+  }
 }

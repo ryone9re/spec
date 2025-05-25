@@ -4,12 +4,15 @@ using Http;
 
 namespace API;
 
-model RootResponse {
-  message: string;
-}
-
 @route("/")
-@tag("RootService")
-interface RootService {
-  @get getRoot(): RootResponse;
+namespace Root {
+  model RootResponse {
+    message: string;
+  }
+
+  @route("/")
+  @tag("RootService")
+  interface RootService {
+    @get getRoot(): RootResponse;
+  }
 }
