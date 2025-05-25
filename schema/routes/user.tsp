@@ -4,12 +4,12 @@ using Http;
 
 namespace API;
 
-model RootResponse {
+model UserResponse {
   message: string;
 }
 
-@route("/")
+@route("/users")
 @tag("RootService")
-interface RootService {
-  @get getRoot(): RootResponse;
+interface UserService {
+  @get getUser(): UserResponse;
 }
