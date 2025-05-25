@@ -66,9 +66,11 @@ jobs:
             -o ${GEN_DEST} \
             --additional-properties=delegatePattern=true,skipOverwrite=true
 
+      - name: Remove artifact
+        run: rm -rf artifact
+
       - name: Commit & Push
         run: |
-          cd backend
           git config user.name  "openapi-bot"
           git config user.email "openapi-bot@users.noreply.github.com"
           git checkout -b $BRANCH_NAME
